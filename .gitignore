@@ -1,0 +1,11 @@
+/target
+**/*.rs.bk
+#*
+*#
+*~
+~*
+*.bak
+*.sav
+kek.*
+Cargo.lock
+.idea

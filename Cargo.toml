@@ -1,0 +1,13 @@
+[package]
+name = "cargo-disassemble"
+version = "0.1.0"
+authors = ["Adam Niederer <adam.niederer@gmail.com>"]
+
+[dependencies]
+rustc-demangle = "0.1.0"
+structopt = "0.1.7"
+structopt-derive = "0.1.6"
+glob = "0.2.11"
+cargo = "0.25.0"
+toml = "0.4.5"
+regex = "0.2.10"

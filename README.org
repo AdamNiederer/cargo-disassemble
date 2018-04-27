@@ -1,0 +1,79 @@
+* cargo-disassemble
+Easily disassemble your Rust project
+
+** Usage
+~cargo-disassemble~ attempts to emulate the command-line interface of other
+cargo subcommands. Notice that the ~function~ argument is optional - not
+including it will disassemble all functions in the current crate.
+
+#+BEGIN_SRC text
+  USAGE:
+      cargo-disassemble [FLAGS] [OPTIONS] [function]
+
+  FLAGS:
+          --all-features           Enable all features
+          --everything             Include functions not defined by the current crate
+      -h, --help                   Prints help information
+          --intel                  Emit intel-flavored x86 ASM
+          --no-default-features    Enable no_default features
+          --optimize               Optimize the binary as much as possible
+          --release                Compile in release mode
+      -V, --version                Prints version information
+
+  OPTIONS:
+          --features <features>    Features to enable, if any
+
+  ARGS:
+      <function>    The name of the function to be decompiled
+#+END_SRC
+** Example
+Given the function:
+
+#+BEGIN_SRC rust
+#[inline(never)]
+fn is_branch_label(line: &str) -> bool {
+    line.starts_with(".LBB")
+}
+#+END_SRC
+
+we can disassemble the optimized version of ~is_branch_label~ with the following
+command:
+
+#+BEGIN_SRC shell
+$ cargo disassemble is_branch_label --release --optimize --intel
+#+END_SRC
+
+which will yield this result:
+
+#+BEGIN_SRC asm
+cargo_disassemble::is_branch_label
+        cmp	rsi, 4
+        je	.LBB66_4
+        cmp	rsi, 5
+        jb	.LBB66_3
+        cmp	byte ptr [rdi + 4], -65
+        jle	.LBB66_3
+.LBB66_4:
+        push	rbp
+        mov	rbp, rsp
+        sub	rsp, 16
+        mov	qword ptr [rbp - 16], rdi
+        mov	qword ptr [rbp - 8], rsi
+        mov	al, 1
+        lea	rcx, [rip + .Lbyte_str.1e]
+        cmp	rdi, rcx
+        lea	rsp, [rsp + 16]
+        pop	rbp
+        je	.LBB66_6
+        cmp	dword ptr [rdi], 1111641134
+        je	.LBB66_6
+.LBB66_3:
+        xor	eax, eax
+        ret
+#+END_SRC
+** Caveats
+When compiling in release mode, rustc will often aggressively inline smaller
+functions. Because inlined functions typically don't have a freestanding copy
+in the final binary, they may not be disassembled. Adding the ~#[inline(never)]~
+attribute to a function will ensure it's included, but may also change the code
+within the function.

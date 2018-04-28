@@ -3,7 +3,7 @@ name = "cargo-disassemble"
 description = "Disassemble your rust project"
 authors = ["Adam Niederer <adam.niederer@gmail.com>"]
 license = "AGPL-3.0"
-version = "0.1.0"
+version = "0.1.1"
 
 keywords = ["disassembly", "cargo"]
 categories = ["command-line-utilities", "command-line-interface", "development-tools", "development-tools::cargo-plugins", "text-processing"]

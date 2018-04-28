@@ -210,7 +210,8 @@ fn main() {
 
         if let Ok(func) = try_demangle(&line[..line.len().saturating_sub(1)]) {
             let func = format!("{}", func);
-            if (options.everything || func.starts_with(&package_name)) && print_re.is_match(&func) {
+            if (options.everything || in_package(&func, &package_name))
+                && print_re.is_match(&func) {
                 prasm = true;
                 println!("{}", func.split_at(func.rfind(":").unwrap() - 1).0);
             }
@@ -243,4 +244,10 @@ fn is_branch_label(line: &str) -> bool {
 fn is_instruction(line: &str) -> bool {
     (line.starts_with(" ") || line.starts_with("\t"))
         && !line.trim_left().starts_with(".")
+}
+
+fn in_package(line: &str, package_name: &str) -> bool {
+    let as_clause: String = String::from(" as ") + package_name;
+    line.trim_left_matches("<").starts_with(&package_name)
+        || (line.starts_with("<") && line.contains(&as_clause))
 }
